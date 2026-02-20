@@ -61,4 +61,50 @@ export class AuthController {
     if (!user) throw new Error('User not found!');
     return { email: user.email };
   }
+
+  //Google auth
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req: any) {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthCallback(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: any,
+  ) {
+    const user = req.user;
+    const token = await this.authService.socialLogin(user);
+
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000, //1day
+    });
+    res.redirect('http://localhost:3000/dashboard');
+  }
+
+  //Github auth
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  async githubAuth(@Req() req: any) {}
+
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  async githubAuthCallback(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: any,
+  ) {
+    const user = req.user;
+    const token = await this.authService.socialLogin(user);
+
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000, //1day
+    });
+    res.redirect('http://localhost:3000/dashboard');
+  }
 }

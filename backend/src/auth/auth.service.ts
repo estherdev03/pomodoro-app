@@ -24,4 +24,21 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Credentials!');
     return this.jwtService.sign({ id: user.id, email: user.email });
   }
+
+  async socialLogin(userData: {
+    email: string;
+    name: string;
+    provider: string;
+  }) {
+    let user = await this.userService.findUserByEmail(userData.email);
+    if (!user) {
+      user = await this.userService.createUser({
+        email: userData.email,
+        firstName: userData.name,
+        lastName: '',
+        password: '',
+      });
+    }
+    return this.jwtService.sign({ id: user.id, email: user.email });
+  }
 }
