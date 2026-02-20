@@ -8,6 +8,7 @@ import { useState } from "react";
 import FormError from "../ui/FormError";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api";
+import { useAuthStore } from "@/lib/store/authStore";
 
 const formSchema = z.object({
   email: z.email("Invalid email address!"),
@@ -20,6 +21,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
   const router = useRouter();
+  const { setLoggedIn } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -33,13 +35,14 @@ export default function LoginForm() {
     setServerError("");
     try {
       const response = await loginUser(data);
-      if (!response.token) {
+      if (!response.message) {
         const error = await response.json();
         setServerError(error.message || "Failed to create account.");
       } else {
-        //Navigate to the home dashboard
-        router.push("/dashboard");
+        setLoggedIn(true);
         console.log("Login user successfully. ", response);
+        //Navigate to the dashboard if logged in successfully
+        router.push("/dashboard");
       }
     } catch (error) {
       setServerError(
