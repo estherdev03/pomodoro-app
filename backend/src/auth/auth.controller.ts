@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { LoginDTO } from './dto/login.dto';
@@ -23,9 +31,26 @@ export class AuthController {
 
   //Login route
   @Post('login')
-  async login(@Body() loginDto: LoginDTO): Promise<{ token: string }> {
+  async login(
+    @Body() loginDto: LoginDTO,
+    @Res({ passthrough: true }) res: any,
+  ): Promise<{ message: string }> {
     const token = await this.authService.login(loginDto);
-    return { token };
+    res.cookie('access_token', token, {
+      httpOnly: true, //make cookie unaccessible to JS
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/', //Cookie path
+      maxAge: 24 * 60 * 60 * 1000, //1 day
+    });
+    return { message: 'Login successfully, token set in cookie.' };
+  }
+
+  //Logout route
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: any): { message: string } {
+    res.clearCookie('access_token');
+    return { message: 'Logout successfully. Cookie cleared.' };
   }
 
   //Profile route
