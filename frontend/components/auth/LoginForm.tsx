@@ -38,6 +38,8 @@ export default function LoginForm() {
       if (!response.message) {
         const error = await response.json();
         setServerError(error.message || "Failed to create account.");
+      } else if (response.twoFARequired) {
+        router.push("/verify-2fa");
       } else {
         setLoggedIn(true);
         console.log("Login user successfully. ", response);

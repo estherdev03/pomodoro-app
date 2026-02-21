@@ -22,7 +22,8 @@ export class AuthService {
     const user = await this.userService.findUserByEmail(loginDto.email);
     if (!user || !(await bcrypt.compare(loginDto.password, user.password)))
       throw new UnauthorizedException('Invalid Credentials!');
-    return this.jwtService.sign({ id: user.id, email: user.email });
+    const token = this.jwtService.sign({ id: user.id, email: user.email });
+    return { user, token };
   }
 
   async socialLogin(userData: {
@@ -40,5 +41,9 @@ export class AuthService {
       });
     }
     return this.jwtService.sign({ id: user.id, email: user.email });
+  }
+
+  generateJwtToken(payload: { email: string; id: number }): string {
+    return this.jwtService.sign(payload);
   }
 }

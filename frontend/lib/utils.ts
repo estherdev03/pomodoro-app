@@ -6,3 +6,8 @@ export const hasToken = async () => {
   const token = (await cookieStore).get("access_token")?.value;
   return !!token;
 };
+export const getToken = async () => {
+  const cookieStore = cookies();
+  const token = (await cookieStore).get("access_token")?.value;
+  return token;
+};

@@ -21,4 +21,19 @@ export class UsersService {
       },
     });
   }
+  async findUserById(id: number): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async setTwoFASecret(id: number, secret: string) {
+    return await this.userRepository.update({ id }, { twoFASecret: secret });
+  }
+
+  async enable2FA(id: number) {
+    return await this.userRepository.update({ id }, { twoFAEnabled: true });
+  }
 }
