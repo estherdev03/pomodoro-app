@@ -35,45 +35,56 @@ export default function Verify2FA() {
       setSuccess(true);
       setLoggedIn(true);
       router.push("/dashboard");
-    } catch (error) {
-      throw new Error("Failed to verify 2FA code. Please try again later.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to verify 2FA code. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <h1 className="text-2xl font-bold mb-4">
-        Verify Two-Factor Authentication
-      </h1>
-      <form className="w-full max-w-sm bg-white p-6 rounded shadow">
-        <label htmlFor="code" className="block mb-2 font-medium">
-          Enter your 2FA code
-        </label>
-        <input
-          id="code"
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          className="w-full px-3 py-2 border rounded mb-4"
-          maxLength={6}
-          required
-          autoFocus
-        />
-        {error && <p className="text-red-500 mb-2">{error}</p>}
-        {success && (
-          <p className="text-green-500 mb-2">Verification successful!</p>
-        )}
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          disabled={loading}
-        >
-          {loading ? "Verifying..." : "Verify"}
-        </button>
-      </form>
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-slate-50 px-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">
+            Two-Factor Verification
+          </h1>
+          <p className="text-slate-600 mt-1 text-sm">
+            Enter the code from your authenticator app
+          </p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label htmlFor="code" className="block text-sm font-medium text-slate-700">
+            6-digit code
+          </label>
+          <input
+            id="code"
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-slate-900 font-mono text-lg tracking-widest"
+            maxLength={6}
+            required
+            autoFocus
+            placeholder="000000"
+          />
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {success && (
+            <p className="text-emerald-600 text-sm font-medium">
+              Verification successful! Redirecting...
+            </p>
+          )}
+          <button
+            type="submit"
+            className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? "Verifying..." : "Verify"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

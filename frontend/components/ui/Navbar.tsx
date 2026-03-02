@@ -2,11 +2,13 @@
 import { useAuthStore } from "@/lib/store/authStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Cookie from "js-cookie";
 import { logoutUser } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Timer, LogOut, User, LayoutDashboard } from "lucide-react";
 import { hasToken } from "@/lib/utils";
+
+const navLink =
+  "text-slate-600 hover:text-indigo-600 font-medium transition-colors";
 
 export default function Navbar() {
   const { loggedIn, setLoggedIn } = useAuthStore();
@@ -19,109 +21,93 @@ export default function Navbar() {
       setLoggedIn(isToken);
     };
     checkLoggedIn();
-  }, []);
+  }, [setLoggedIn]);
 
   const handleLogout = async () => {
-    Cookie.remove("access_token");
     setLoggedIn(false);
     await logoutUser();
     router.push("/login");
   };
 
   return (
-    <nav className="bg-white shadow-md px-4 py-3">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold text-gray-800 ">
-          AI Pomodoro
+    <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-xl font-bold text-slate-800 hover:text-indigo-600 transition-colors"
+        >
+          <Timer className="w-6 h-6 text-indigo-500" />
+          Pomodoro
         </Link>
-        {/* Desktop menu */}
-        <div className="hidden md:flex space-x-6 items-center">
-          <Link href="/" className="text-gray-700 hover:text-gray-600">
+        <div className="hidden md:flex items-center gap-8">
+          <Link href="/" className={navLink}>
             Home
           </Link>
           {loggedIn ? (
             <>
-              <Link
-                href="/dashboard"
-                className="text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/dashboard" className={`${navLink} flex items-center gap-1.5`}>
+                <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
-              <Link
-                href="/profile"
-                className="text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/profile" className={`${navLink} flex items-center gap-1.5`}>
+                <User className="w-4 h-4" />
                 Profile
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-gray-700 hover:text-gray-600 focus:outline-none"
+                className={`${navLink} flex items-center gap-1.5`}
               >
+                <LogOut className="w-4 h-4" />
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link
-                href="/register"
-                className="text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/register" className={navLink}>
                 Register
               </Link>
-              <Link href="/login" className="text-gray-700 hover:text-gray-600">
+              <Link
+                href="/login"
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+              >
                 Login
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile menu button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-gray-800 focus:outline-none"
+          className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg"
+          aria-label="Toggle menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
-      {/* Mobile menu */}
+
       {isOpen && (
-        <div className="md:hidden mt-2 space-y-2 pb-4">
-          <Link href="/" className="block text-gray-700 hover:text-gray-600">
+        <div className="md:hidden px-4 py-4 space-y-2 border-t border-slate-100 bg-white">
+          <Link href="/" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
             Home
           </Link>
           {loggedIn ? (
             <>
-              <Link
-                href="/dashboard"
-                className="block text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/dashboard" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
                 Dashboard
               </Link>
-              <Link
-                href="/profile"
-                className="block text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/profile" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
                 Profile
               </Link>
-              <button
-                onClick={handleLogout}
-                className="block text-gray-700 hover:text-gray-600"
-              >
+              <button onClick={handleLogout} className={`block py-2 w-full text-left ${navLink}`}>
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link
-                href="/register"
-                className="block text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/register" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
                 Register
               </Link>
-              <Link
-                href="/login"
-                className="block text-gray-700 hover:text-gray-600"
-              >
+              <Link href="/login" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
                 Login
               </Link>
             </>

@@ -44,8 +44,7 @@ export default function RegisterForm() {
     try {
       const response = await registerUser(data);
       if (!response.token) {
-        const error = await response.json();
-        setServerError(error.message || "Failed to create account.");
+        setServerError(response.message || "Failed to create account.");
       } else {
         //Navigate to the home dashboard
         router.push("/login");
@@ -53,7 +52,7 @@ export default function RegisterForm() {
       }
     } catch (error) {
       setServerError(
-        "An error occur while creating your account. Please try again later.",
+        "An error occurred while creating your account. Please try again later.",
       );
     } finally {
       setIsLoading(false);
@@ -63,9 +62,12 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 w-full max-w-md"
+      className="space-y-4 w-full"
     >
-      <h2 className="text-2xl font-bold mb-4">Create your account</h2>
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-slate-900">Create account</h2>
+        <p className="text-slate-600 mt-1 text-sm">Get started with free Pomodoro tracking</p>
+      </div>
       {serverError && <FormError message={serverError} />}
       <Input
         label="First Name"

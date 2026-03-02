@@ -88,6 +88,9 @@ export class AuthController {
   ) {
     const user = req.user;
     const token = await this.authService.socialLogin(user);
+    const frontendUrl = (
+      process.env.FRONTEND_URL ?? 'http://localhost:3000'
+    ).replace(/\/$/, '');
 
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -95,7 +98,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
-    res.redirect('http://localhost:3000/dashboard');
+    res.redirect(`${frontendUrl}/dashboard`);
   }
 
   //Github auth
@@ -111,6 +114,7 @@ export class AuthController {
   ) {
     const user = req.user;
     const token = await this.authService.socialLogin(user);
+    const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:3000';
 
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -118,7 +122,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
-    res.redirect('http://localhost:3000/dashboard');
+    res.redirect(`${frontendUrl}/dashboard`);
   }
 
   @UseGuards(AuthGuard('jwt'))

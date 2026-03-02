@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+}
+
+:root {
+  --color-primary: 99 102 241;
+  --color-primary-dark: 79 70 229;
+  --color-accent: 236 72 153;
+  --color-surface: 248 250 252;
+  --color-surface-elevated: 255 255 255;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: "rlig" 1, "calt" 1;
+}

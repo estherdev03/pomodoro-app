@@ -22,9 +22,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             type={type}
             className={clsx(
-              "w-full px-2 h-10 border rounded-md focus:ring-2 focus:ring-blue-500 text-sm font-medium",
+              "w-full px-4 h-11 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 text-sm outline-none transition",
 
-              error ? "border-red-500" : "border-gray-300",
+              error ? "border-red-400" : "border-slate-300",
               className,
             )}
             id={props.id || props.name}

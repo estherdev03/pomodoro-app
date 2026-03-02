@@ -20,14 +20,14 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition";
+    "px-4 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50";
   const variantStyles = {
     primary:
-      "bg-blue-600 text-white hover:bg-blue-700 focus:ring-gray-400 hover:cursor-pointer disabled:bg-blue-300",
+      "bg-indigo-600 text-white hover:bg-indigo-700 hover:cursor-pointer",
     secondary:
-      "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400 hover:cursor-pointer disabled:bg-gray-100",
+      "bg-slate-200 text-slate-800 hover:bg-slate-300 hover:cursor-pointer",
     danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 hover:cursor-pointer disabled:bg-red-300",
+      "bg-red-600 text-white hover:bg-red-700 hover:cursor-pointer",
   };
   return (
     <button
