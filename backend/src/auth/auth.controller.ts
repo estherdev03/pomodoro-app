@@ -43,7 +43,7 @@ export class AuthController {
     if (user.twoFAEnabled) {
       res.cookie('pending_user', user.id, {
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'none',
         secure: process.env.NODE_ENV === 'production',
         maxAge: 5 * 60 * 1000, //5min
       });
@@ -52,7 +52,7 @@ export class AuthController {
     res.cookie('access_token', token, {
       httpOnly: true, //make cookie unaccessible to JS
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/', //Cookie path
       maxAge: 24 * 60 * 60 * 1000, //1 day
     });
@@ -94,7 +94,7 @@ export class AuthController {
 
     res.cookie('access_token', token, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
@@ -118,7 +118,7 @@ export class AuthController {
 
     res.cookie('access_token', token, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
@@ -156,14 +156,14 @@ export class AuthController {
     res.cookie('access_token', token, {
       httpOnly: true, //make cookie unaccessible to JS
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/', //Cookie path
       maxAge: 24 * 60 * 60 * 1000, //1 day
     });
     //Clear pending cookie after verifying successfully
     res.clearCookie('pending_user', {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: process.env.NODE_ENV === 'production',
     });
     return { message: '2FA verification successfully.', success: true };
