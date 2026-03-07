@@ -9,16 +9,30 @@ import {
   Coffee,
   Sunset,
   Square,
-  Clock,
   History,
-  Tomato,
+  Clock,
   CheckCircle2,
 } from "lucide-react";
 
 const SESSION_LABELS = {
-  pomodoro: { label: "Pomodoro", icon: Tomato, color: "emerald", duration: "25 min" },
-  short_break: { label: "Short Break", icon: Coffee, color: "blue", duration: "5 min" },
-  long_break: { label: "Long Break", icon: Sunset, color: "violet", duration: "15 min" },
+  pomodoro: {
+    label: "Pomodoro",
+    icon: Clock,
+    color: "emerald",
+    duration: "25 min",
+  },
+  short_break: {
+    label: "Short Break",
+    icon: Coffee,
+    color: "blue",
+    duration: "5 min",
+  },
+  long_break: {
+    label: "Long Break",
+    icon: Sunset,
+    color: "violet",
+    duration: "15 min",
+  },
 };
 
 export default function PomodoroDashboard() {
@@ -38,7 +52,9 @@ export default function PomodoroDashboard() {
   const hasTriggeredEndRef = useRef(false);
 
   const notifySessionComplete = (sessionType: string) => {
-    const label = SESSION_LABELS[sessionType as keyof typeof SESSION_LABELS]?.label ?? sessionType;
+    const label =
+      SESSION_LABELS[sessionType as keyof typeof SESSION_LABELS]?.label ??
+      sessionType;
     setCompletedMessage(`${label} complete! Great work.`);
     setTimeout(() => setCompletedMessage(null), 5000);
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -109,7 +125,9 @@ export default function PomodoroDashboard() {
     return moment.utc(seconds * 1000).format("mm:ss");
   }
 
-  const completedPomodoros = sessionHistory.filter((s) => s.type === "pomodoro").length;
+  const completedPomodoros = sessionHistory.filter(
+    (s) => s.type === "pomodoro",
+  ).length;
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50 py-8 px-4">
@@ -192,7 +210,8 @@ export default function PomodoroDashboard() {
           ) : (
             <ul className="space-y-2">
               {sessionHistory.map((s) => {
-                const meta = SESSION_LABELS[s.type as keyof typeof SESSION_LABELS];
+                const meta =
+                  SESSION_LABELS[s.type as keyof typeof SESSION_LABELS];
                 const Icon = meta?.icon || Clock;
                 const duration = s.duration
                   ? moment.utc(s.duration * 1000).format("m[min]")
