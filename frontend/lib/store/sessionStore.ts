@@ -1,8 +1,9 @@
 import axios from "axios";
 import { create } from "zustand";
 
+// Use /api/backend proxy so cookies (on frontend domain) are sent; proxy adds Bearer token for Railway
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "/api/backend",
   withCredentials: true,
 });
 

@@ -34,17 +34,15 @@ export const registerUser = async (data: RegisterInput) => {
 };
 
 export const loginUser = async (data: LoginInput) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(data),
+  // Use frontend's API route so cookie is set for our domain (fixes cross-origin: Vercel + Railway)
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
   const body = await response.json();
   if (!response.ok) {
     return {
@@ -58,16 +56,13 @@ export const loginUser = async (data: LoginInput) => {
 };
 
 export const logoutUser = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
+  const response = await fetch("/api/auth/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    credentials: "include",
+  });
   return response.json();
 };
 

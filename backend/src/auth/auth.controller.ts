@@ -98,7 +98,8 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
-    res.redirect(`${frontendUrl}/dashboard`);
+    // Redirect with token in URL so frontend (different domain) can set its own cookie
+    res.redirect(`${frontendUrl}/auth/callback?token=${encodeURIComponent(token)}`);
   }
 
   //Github auth
@@ -122,7 +123,8 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
-    res.redirect(`${frontendUrl}/dashboard`);
+    // Redirect with token in URL so frontend (different domain) can set its own cookie
+    res.redirect(`${frontendUrl.replace(/\/$/, '')}/auth/callback?token=${encodeURIComponent(token)}`);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -166,7 +168,7 @@ export class AuthController {
       sameSite: 'none',
       secure: process.env.NODE_ENV === 'production',
     });
-    return { message: '2FA verification successfully.', success: true };
+    return { message: '2FA verification successfully.', success: true, token };
   }
 
   @UseGuards(AuthGuard('jwt'))

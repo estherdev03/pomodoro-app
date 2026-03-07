@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export default function Enable2FA() {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [code, setCode] = useState("");
@@ -13,7 +11,7 @@ export default function Enable2FA() {
     setMessage(null);
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/2fa/generate`, {
+      const response = await fetch("/api/backend/auth/2fa/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -33,7 +31,7 @@ export default function Enable2FA() {
     setMessage(null);
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/2fa/enable`, {
+      const response = await fetch("/api/backend/auth/2fa/enable", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
