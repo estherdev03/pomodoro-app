@@ -18,30 +18,21 @@ export default function Verify2FA() {
     setError("");
     setSuccess(false);
     try {
-      // Call backend directly so pending_user cookie (on backend domain) is sent
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/2fa/verify`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ code }),
+      // Use our proxy so pending_user (set on our domain at login) is sent to Railway
+      const response = await fetch("/api/auth/2fa/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
-      if (!response.ok) throw new Error("Failed to verify 2FA code.");
+        credentials: "include",
+        body: JSON.stringify({ code }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to verify 2FA code.");
+      }
       const data = await response.json();
       if (!data.success || !data.token) throw new Error("Cannot verify 2FA code.");
-
-      // Set cookie on our domain for cross-origin (Vercel + Railway)
-      const setTokenRes = await fetch("/api/auth/set-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ token: data.token }),
-      });
-      if (!setTokenRes.ok) throw new Error("Failed to complete sign in.");
 
       setSuccess(true);
       setLoggedIn(true);
