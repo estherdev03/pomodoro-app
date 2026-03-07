@@ -86,11 +86,37 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: any,
   ) {
-    const user = req.user;
-    const token = await this.authService.socialLogin(user);
+    const oauthUser = req.user;
     const frontendUrl = (
       process.env.FRONTEND_URL ?? 'http://localhost:3000'
     ).replace(/\/$/, '');
+
+    // Ensure user exists in DB
+    let dbUser = await this.userService.findUserByEmail(oauthUser.email);
+    if (!dbUser) {
+      dbUser = await this.userService.createUser({
+        email: oauthUser.email,
+        firstName: oauthUser.name,
+        lastName: '',
+        password: '',
+      });
+    }
+
+    // If 2FA is enabled, start 2FA flow instead of issuing an access token
+    if (dbUser.twoFAEnabled) {
+      res.cookie('pending_user', dbUser.id, {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 5 * 60 * 1000, // 5 minutes
+      });
+      return res.redirect(`${frontendUrl}/verify-2fa?from=oauth`);
+    }
+
+    const token = this.authService.generateJwtToken({
+      id: dbUser.id,
+      email: dbUser.email,
+    });
 
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -113,9 +139,38 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: any,
   ) {
-    const user = req.user;
-    const token = await this.authService.socialLogin(user);
-    const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:3000';
+    const oauthUser = req.user;
+    const frontendUrl = (process.env.FRONTEND_URL ?? 'http://localhost:3000').replace(
+      /\/$/,
+      '',
+    );
+
+    // Ensure user exists in DB
+    let dbUser = await this.userService.findUserByEmail(oauthUser.email);
+    if (!dbUser) {
+      dbUser = await this.userService.createUser({
+        email: oauthUser.email,
+        firstName: oauthUser.name,
+        lastName: '',
+        password: '',
+      });
+    }
+
+    // If 2FA is enabled, start 2FA flow instead of issuing an access token
+    if (dbUser.twoFAEnabled) {
+      res.cookie('pending_user', dbUser.id, {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 5 * 60 * 1000, // 5 minutes
+      });
+      return res.redirect(`${frontendUrl}/verify-2fa?from=oauth`);
+    }
+
+    const token = this.authService.generateJwtToken({
+      id: dbUser.id,
+      email: dbUser.email,
+    });
 
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -124,7 +179,7 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000, //1day
     });
     // Redirect with token in URL so frontend (different domain) can set its own cookie
-    res.redirect(`${frontendUrl.replace(/\/$/, '')}/auth/callback?token=${encodeURIComponent(token)}`);
+    res.redirect(`${frontendUrl}/auth/callback?token=${encodeURIComponent(token)}`);
   }
 
   @UseGuards(AuthGuard('jwt'))

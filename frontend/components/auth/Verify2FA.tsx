@@ -1,6 +1,6 @@
 "use client";
 import { useAuthStore } from "@/lib/store/authStore";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function Verify2FA() {
@@ -10,6 +10,7 @@ export default function Verify2FA() {
   const [success, setSuccess] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setLoggedIn } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,21 +19,41 @@ export default function Verify2FA() {
     setError("");
     setSuccess(false);
     try {
-      // Use our proxy so pending_user (set on our domain at login) is sent to Railway
-      const response = await fetch("/api/auth/2fa/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const from = searchParams.get("from");
+      const isOauth = from === "oauth";
+
+      // Email/password login uses our proxy so pending_user (on frontend domain) is sent to Railway
+      // OAuth login calls backend directly; pending_user is on backend domain
+      const response = await fetch(
+        isOauth
+          ? `${process.env.NEXT_PUBLIC_API_URL}/auth/2fa/verify`
+          : "/api/auth/2fa/verify",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ code }),
         },
-        credentials: "include",
-        body: JSON.stringify({ code }),
-      });
+      );
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         throw new Error(errData.message || "Failed to verify 2FA code.");
       }
       const data = await response.json();
       if (!data.success || !data.token) throw new Error("Cannot verify 2FA code.");
+
+      // For OAuth, backend sets cookie on its own domain; mirror to our domain
+      if (isOauth) {
+        const setTokenRes = await fetch("/api/auth/set-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ token: data.token }),
+        });
+        if (!setTokenRes.ok) throw new Error("Failed to complete sign in.");
+      }
 
       setSuccess(true);
       setLoggedIn(true);
