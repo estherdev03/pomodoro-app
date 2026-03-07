@@ -9,7 +9,7 @@ import { hasToken } from "@/lib/utils";
 
 const navLink =
   "text-slate-600 hover:text-indigo-600 font-medium transition-colors";
-const navLinkActive = "text-indigo-600 font-semibold";
+const navLinkActive = "text-violet-600 font-semibold";
 
 function getLinkClass(href: string, pathname: string, base = navLink): string {
   const isActive =
@@ -88,7 +88,7 @@ export default function Navbar() {
                 href="/login"
                 className={
                   pathname === "/login"
-                    ? "px-4 py-2 rounded-lg bg-indigo-700 text-white font-semibold"
+                    ? "px-4 py-2 rounded-lg bg-violet-600 text-white font-semibold"
                     : "px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
                 }
               >
