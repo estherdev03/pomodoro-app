@@ -9,6 +9,15 @@ import { hasToken } from "@/lib/utils";
 
 const navLink =
   "text-slate-600 hover:text-indigo-600 font-medium transition-colors";
+const navLinkActive = "text-indigo-600 font-semibold";
+
+function getLinkClass(href: string, pathname: string, base = navLink): string {
+  const isActive =
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(href + "/");
+  return `${base} ${isActive ? navLinkActive : ""}`.trim();
+}
 
 export default function Navbar() {
   const { loggedIn, setLoggedIn } = useAuthStore();
@@ -49,16 +58,16 @@ export default function Navbar() {
           Pomodoro
         </Link>
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className={navLink}>
+          <Link href="/" className={getLinkClass("/", pathname)}>
             Home
           </Link>
           {loggedIn ? (
             <>
-              <Link href="/dashboard" className={`${navLink} flex items-center gap-1.5`}>
+              <Link href="/dashboard" className={`${getLinkClass("/dashboard", pathname)} flex items-center gap-1.5`}>
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
-              <Link href="/profile" className={`${navLink} flex items-center gap-1.5`}>
+              <Link href="/profile" className={`${getLinkClass("/profile", pathname)} flex items-center gap-1.5`}>
                 <User className="w-4 h-4" />
                 Profile
               </Link>
@@ -72,12 +81,16 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/register" className={navLink}>
+              <Link href="/register" className={getLinkClass("/register", pathname)}>
                 Register
               </Link>
               <Link
                 href="/login"
-                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                className={
+                  pathname === "/login"
+                    ? "px-4 py-2 rounded-lg bg-indigo-700 text-white font-semibold"
+                    : "px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                }
               >
                 Login
               </Link>
@@ -96,15 +109,15 @@ export default function Navbar() {
 
       {isOpen && (
         <div className="md:hidden px-4 py-4 space-y-2 border-t border-slate-100 bg-white">
-          <Link href="/" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
+          <Link href="/" className={`block py-2 ${getLinkClass("/", pathname)}`} onClick={() => setIsOpen(false)}>
             Home
           </Link>
           {loggedIn ? (
             <>
-              <Link href="/dashboard" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
+              <Link href="/dashboard" className={`block py-2 ${getLinkClass("/dashboard", pathname)}`} onClick={() => setIsOpen(false)}>
                 Dashboard
               </Link>
-              <Link href="/profile" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
+              <Link href="/profile" className={`block py-2 ${getLinkClass("/profile", pathname)}`} onClick={() => setIsOpen(false)}>
                 Profile
               </Link>
               <button onClick={handleLogout} className={`block py-2 w-full text-left ${navLink}`}>
@@ -113,10 +126,10 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/register" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
+              <Link href="/register" className={`block py-2 ${getLinkClass("/register", pathname)}`} onClick={() => setIsOpen(false)}>
                 Register
               </Link>
-              <Link href="/login" className={`block py-2 ${navLink}`} onClick={() => setIsOpen(false)}>
+              <Link href="/login" className={`block py-2 ${getLinkClass("/login", pathname)}`} onClick={() => setIsOpen(false)}>
                 Login
               </Link>
             </>
