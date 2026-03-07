@@ -3,7 +3,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { logoutUser } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Menu, X, Timer, LogOut, User, LayoutDashboard } from "lucide-react";
 import { hasToken } from "@/lib/utils";
 
@@ -13,15 +13,24 @@ const navLink =
 export default function Navbar() {
   const { loggedIn, setLoggedIn } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    // Skip check on OAuth callback so we don't overwrite setLoggedIn(true) with a stale false
+    if (pathname === "/auth/callback") return;
     const checkLoggedIn = async () => {
       const isToken = await hasToken();
+      // Don't overwrite with false right after OAuth (hasToken can be stale)
+      if (typeof window !== "undefined" && sessionStorage.getItem("auth_just_logged_in")) {
+        sessionStorage.removeItem("auth_just_logged_in");
+        if (isToken) setLoggedIn(true);
+        return;
+      }
       setLoggedIn(isToken);
     };
     checkLoggedIn();
-  }, [setLoggedIn]);
+  }, [pathname, setLoggedIn]);
 
   const handleLogout = async () => {
     setLoggedIn(false);

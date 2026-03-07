@@ -25,6 +25,9 @@ function AuthCallbackContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("auth_just_logged_in", "1");
+          }
           setLoggedIn(true);
           router.replace("/dashboard");
         } else {
