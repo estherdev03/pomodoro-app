@@ -198,6 +198,14 @@ pomodoro-app/
 
 ## API Overview
 
+The backend exposes 17 endpoints.
+
+### General
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Health check (returns a greeting) |
+
 ### Auth
 
 | Method | Endpoint | Description |
@@ -207,7 +215,9 @@ pomodoro-app/
 | POST | `/auth/logout` | Logout and clear session |
 | GET | `/auth/profile` | Get current user (JWT required) |
 | GET | `/auth/google` | Initiate Google OAuth |
+| GET | `/auth/google/callback` | Google OAuth callback (issues token or starts 2FA) |
 | GET | `/auth/github` | Initiate GitHub OAuth |
+| GET | `/auth/github/callback` | GitHub OAuth callback (issues token or starts 2FA) |
 | POST | `/auth/2fa/generate` | Generate 2FA secret |
 | POST | `/auth/2fa/verify` | Verify 2FA TOTP code |
 | POST | `/auth/2fa/enable` | Enable 2FA for the user |
