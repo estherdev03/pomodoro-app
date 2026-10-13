@@ -198,7 +198,7 @@ pomodoro-app/
 
 ## API Overview
 
-The backend exposes 17 endpoints.
+The backend exposes 16 endpoints.
 
 ### General
 
